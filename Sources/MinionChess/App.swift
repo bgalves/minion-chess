@@ -3,7 +3,7 @@ import SwiftUI
 @main
 struct MinionChessApp: App {
     @StateObject private var game = Game()
-    init() { if let i = CommandLine.arguments.firstIndex(of: "--icon"), i + 1 < CommandLine.arguments.count { MainActor.assumeIsolated { renderIcon(to: CommandLine.arguments[i + 1]) }; exit(0) }; if CommandLine.arguments.contains("--selftest") { runSelfTest(); exit(0) }; NSApplication.shared.setActivationPolicy(.regular); NSApplication.shared.activate(ignoringOtherApps: true) }
+    init() { if let i = CommandLine.arguments.firstIndex(of: "--screens"), i + 1 < CommandLine.arguments.count { MainActor.assumeIsolated { renderScreens(to: CommandLine.arguments[i + 1]) }; exit(0) }; if let i = CommandLine.arguments.firstIndex(of: "--icon"), i + 1 < CommandLine.arguments.count { MainActor.assumeIsolated { renderIcon(to: CommandLine.arguments[i + 1]) }; exit(0) }; if CommandLine.arguments.contains("--selftest") { runSelfTest(); exit(0) }; NSApplication.shared.setActivationPolicy(.regular); NSApplication.shared.activate(ignoringOtherApps: true) }
 
     var body: some Scene {
         WindowGroup("Minion Chess") {

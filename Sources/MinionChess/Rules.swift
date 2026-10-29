@@ -294,7 +294,7 @@ struct Position {
                 if p.kind == .pawn { if cap { s += String(sqName(m.from).first!) } }
                 else {
                     s += p.kind.letter
-                    let others = legal.filter { $0.from != m.from && $0.to == m.to && b[$0.from]?.kind == p.kind && !$0.isDrop }
+                    let others = legal.filter { !$0.isDrop && $0.from != m.from && $0.to == m.to && b[$0.from]?.kind == p.kind }
                     if !others.isEmpty {
                         let sameFile = others.contains { $0.from % 8 == m.from % 8 }
                         let sameRank = others.contains { $0.from / 8 == m.from / 8 }

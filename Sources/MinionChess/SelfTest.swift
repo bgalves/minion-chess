@@ -54,3 +54,25 @@ import SwiftUI
         try? png.write(to: URL(fileURLWithPath: path))
     }
 }
+
+@MainActor func renderScreens(to dir: String) {
+    func play(_ g: Game, _ sans: [String]) {
+        for t in sans {
+            guard let m = g.legal.first(where: { g.pos.san($0, legal: g.legal) == t }) else { print("bad", t); return }
+            g.play(m, human: true)
+        }
+    }
+    func save<V: View>(_ v: V, _ name: String) {
+        let r = ImageRenderer(content: v.frame(width: 820, height: 600).background(Color(white: 0.96)).environment(\.colorScheme, .light)); r.scale = 2
+        if let img = r.nsImage, let tiff = img.tiffRepresentation, let rep = NSBitmapImageRep(data: tiff),
+           let png = rep.representation(using: .png, properties: [:]) { try? png.write(to: URL(fileURLWithPath: dir + "/" + name)) }
+    }
+    let a = Game(); a.newGame(variant: .normal, mode: .humanVsHuman); save(ContentView(game: a, staticLog: true), "start.png")
+    let b = Game(); b.newGame(variant: .normal, mode: .humanVsHuman)
+    play(b, ["e4", "e5", "Nf3", "Nc6", "Bc4", "Bc5", "c3", "Nf6", "d4", "exd4"])
+    b.hint = b.legal.first { b.pos.san($0, legal: b.legal) == "cxd4" }; b.showLast = true; b.selected = nil
+    save(ContentView(game: b, staticLog: true), "game.png")
+    let c = Game(); c.newGame(variant: .crazyhouse, mode: .humanVsHuman)
+    play(c, ["e4", "d5", "exd5", "Qxd5", "Nc3", "Qa5"]); c.selectedDrop = .pawn
+    save(ContentView(game: c, staticLog: true), "crazyhouse.png")
+}

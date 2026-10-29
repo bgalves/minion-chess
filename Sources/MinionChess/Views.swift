@@ -233,6 +233,18 @@ extension Game {
 struct ContentView: View {
     @ObservedObject var game: Game
     @State private var showNew = false
+    var staticLog = false
+    private var logRows: some View {
+        VStack(alignment: .leading, spacing: 2) {
+            ForEach(0..<((game.sans.count + 1) / 2), id: \.self) { i in
+                HStack {
+                    Text("\(i + 1).").foregroundColor(.secondary).frame(width: 30, alignment: .trailing)
+                    Text(game.sans[2 * i]).frame(width: 70, alignment: .leading)
+                    Text(2 * i + 1 < game.sans.count ? game.sans[2 * i + 1] : "").frame(width: 70, alignment: .leading)
+                }.font(.system(.body, design: .monospaced)).id(i)
+            }
+        }
+    }
     var body: some View {
         HStack(spacing: 0) {
             VStack(spacing: 4) {
@@ -257,19 +269,11 @@ struct ContentView: View {
                 }
                 Divider()
                 Text("Game Log").font(.subheadline.bold())
-                ScrollViewReader { proxy in
-                    ScrollView {
-                        LazyVStack(alignment: .leading, spacing: 2) {
-                            ForEach(0..<((game.sans.count + 1) / 2), id: \.self) { i in
-                                HStack {
-                                    Text("\(i + 1).").foregroundColor(.secondary).frame(width: 30, alignment: .trailing)
-                                    Text(game.sans[2 * i]).frame(width: 70, alignment: .leading)
-                                    Text(2 * i + 1 < game.sans.count ? game.sans[2 * i + 1] : "").frame(width: 70, alignment: .leading)
-                                }.font(.system(.body, design: .monospaced)).id(i)
-                            }
-                        }
+                if staticLog { logRows } else {
+                    ScrollViewReader { proxy in
+                        ScrollView { logRows }
+                        .onChange(of: game.sans.count) { _ in proxy.scrollTo((game.sans.count - 1) / 2, anchor: .bottom) }
                     }
-                    .onChange(of: game.sans.count) { _ in proxy.scrollTo((game.sans.count - 1) / 2, anchor: .bottom) }
                 }
             }
             .padding(14).frame(width: 260)
